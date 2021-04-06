@@ -18,7 +18,21 @@ export function Home() {
 		listCopy = todoList;
 		listCopy = todoList.splice(index, 1);
 		setList(todoList.filter(item => item.name !== listCopy));
+		putList(todoList);
 	};
+
+	const handleRemoveAllItems = e => {
+		const liElement = e.target;
+		const index = liElement.parentElement.getAttribute("data-index");
+
+		listCopy = todoList;
+		listCopy = [];
+		//listCopy.length = 0;
+		setList(listCopy);
+		deleteList();
+		console.log(listCopy);
+	};
+
 	const handleMouserOver = e => {
 		const liElement = e.target;
 		liElement.getElementsByTagName("i")[0].nextSibling.data !==
@@ -38,10 +52,14 @@ export function Home() {
 	};
 
 	function postList() {
-		var raw = JSON.stringify([todoList]);
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+
+		var raw = JSON.stringify([]);
 
 		var requestOptions = {
 			method: "POST",
+			headers: myHeaders,
 			body: raw,
 			redirect: "follow"
 		};
@@ -52,7 +70,8 @@ export function Home() {
 		)
 			.then(response => response.text())
 			.then(result => console.log(result))
-			.catch(error => console.log("error in POST", error));
+			.then(hacer => getList())
+			.catch(error => console.log("error", error));
 	}
 
 	useEffect(() => {
@@ -77,7 +96,27 @@ export function Home() {
 		console.log(todoList);
 	}
 
-	function deleteList() {}
+	function deleteList() {
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+
+		var raw = "FORM PARAMS: none";
+
+		var requestOptions = {
+			method: "DELETE",
+			headers: myHeaders,
+			body: raw,
+			redirect: "follow"
+		};
+
+		fetch(
+			"https://assets.breatheco.de/apis/fake/todos/user/juanarrieta1986",
+			requestOptions
+		)
+			.then(response => response.text())
+			.then(result => console.log(result))
+			.catch(error => console.log("error", error));
+	}
 
 	function putList(updateList) {
 		var myHeaders = new Headers();
@@ -124,6 +163,10 @@ export function Home() {
 					}
 				}}
 			/>
+			<i className="fa fa-trash" onClick={handleRemoveAllItems}>
+				{" "}
+				Remove all items
+			</i>
 			<ul className="list-group">
 				{todoList.map((item, index) => {
 					return (
